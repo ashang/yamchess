@@ -154,14 +154,22 @@ const ChessGame: React.FC = () => {
 
     try {
       const chess = new Chess();
+      const validMoves: string[] = [];
+      
       // Load all moves
       for (const move of game.moves) {
-        chess.move(move);
+        const result = chess.move(move);
+        if (result === null) {
+          console.error(`Invalid move in history: ${move}`);
+          // Skip invalid moves
+          continue;
+        }
+        validMoves.push(move);
       }
       
       gameRef.current = chess;
       setPosition(chess.fen());
-      setMoveHistory(game.moves.map(move => ({ move })));
+      setMoveHistory(validMoves.map(move => ({ move })));
       setGameStatus(getGameStatus(chess));
       setIsThinking(false);
       setSelectedPosition(game.startPosition);
