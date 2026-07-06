@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Chess } from 'chess.js';
 import { Chessboard } from 'react-chessboard';
 import './ChessGame.css';
@@ -122,17 +122,6 @@ const ChessGame: React.FC = () => {
 
   // Get the current FEN position
   const fen = game.fen();
-
-  // Handle window resize for responsiveness
-  useEffect(() => {
-    const handleResize = () => {
-      // This will trigger a re-render with the new width
-      setGame(new Chess(game.fen()));
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [game]);
 
   return (
     <div className="chess-game">
