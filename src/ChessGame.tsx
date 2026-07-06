@@ -3,34 +3,36 @@ import { Chess } from 'chess.js';
 import { Chessboard } from 'react-chessboard';
 import { findBestMove } from './chessAI';
 import { CHESS_POSITIONS } from './positions';
+import { useLanguage } from './i18n/LanguageContext';
 
 type MoveEntry = {
   move: string;
 };
 
 const ChessGame: React.FC = () => {
+  const { t, language, setLanguage } = useLanguage();
   const gameRef = useRef(new Chess());
   const [position, setPosition] = useState(gameRef.current.fen());
   const [moveHistory, setMoveHistory] = useState<MoveEntry[]>([]);
-  const [gameStatus, setGameStatus] = useState('进行中');
+  const [gameStatus, setGameStatus] = useState(t('inProgress'));
   const [isThinking, setIsThinking] = useState(false);
   const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
 
   const getGameStatus = useCallback((chess: Chess): string => {
     if (chess.isCheckmate()) {
-      return `将杀！${chess.turn() === 'w' ? '黑方' : '白方'}获胜！`;
+      return `${t('checkmate')} ${chess.turn() === 'w' ? t('black') : t('white')}`;
     }
     if (chess.isStalemate()) {
-      return '和棋（无子可走）！';
+      return t('stalemate');
     }
     if (chess.isDraw()) {
-      return '和棋！';
+      return t('draw');
     }
     if (chess.isCheck()) {
-      return '将军！';
+      return t('check');
     }
-    return '进行中';
-  }, []);
+    return t('inProgress');
+  }, [t]);
 
   const syncState = useCallback(() => {
     setPosition(gameRef.current.fen());
@@ -98,7 +100,7 @@ const ChessGame: React.FC = () => {
     gameRef.current = new Chess();
     setPosition(gameRef.current.fen());
     setMoveHistory([]);
-    setGameStatus('进行中');
+    setGameStatus(t('inProgress'));
     setIsThinking(false);
     setSelectedPosition(null);
   };
@@ -151,15 +153,31 @@ const ChessGame: React.FC = () => {
     setSelectedPosition(null);
   };
 
-  const currentTurn = gameRef.current.turn() === 'w' ? '白方' : '黑方';
+  const currentTurn = gameRef.current.turn() === 'w' ? t('white') : t('black');
 
   return (
     <div style={{ margin: '20px auto', maxWidth: '700px', padding: '0 20px' }}>
-      <h2 style={{ textAlign: 'center', marginBottom: 10 }}>象棋对弈</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+        <h2 style={{ textAlign: 'center', margin: 0, flex: 1 }}>{t('title')}</h2>
+        <select
+          value={language}
+          onChange={(e) => setLanguage(e.target.value as any)}
+          style={{
+            padding: '6px 12px',
+            fontSize: 14,
+            cursor: 'pointer',
+            marginLeft: 10,
+          }}
+        >
+          <option value="zh">中文</option>
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+        </select>
+      </div>
 
       {selectedPosition && (
         <div style={{ textAlign: 'center', marginBottom: 10, color: '#666', fontSize: 14 }}>
-          当前局面: {selectedPosition}
+          {t('currentPosition')}: {selectedPosition}
         </div>
       )}
 
@@ -175,7 +193,7 @@ const ChessGame: React.FC = () => {
 
       <div style={{ marginTop: 20, textAlign: 'center' }}>
         <p style={{ fontSize: 16, fontWeight: 'bold' }}>
-          状态: {gameStatus} | 轮到: {isThinking ? '黑方思考中...' : currentTurn}
+          {t('status')}: {gameStatus} | {t('turn')}: {isThinking ? `${t('black')} ${t('thinking')}` : currentTurn}
         </p>
         
         <div style={{ marginTop: 15 }}>
@@ -188,7 +206,7 @@ const ChessGame: React.FC = () => {
               marginRight: 8,
             }}
           >
-            新游戏
+            {t('newGame')}
           </button>
           <button
             onClick={() => loadRandomPosition('middlegame')}
@@ -199,7 +217,7 @@ const ChessGame: React.FC = () => {
               marginRight: 8,
             }}
           >
-            随机中局
+            {t('randomMiddlegame')}
           </button>
           <button
             onClick={() => loadRandomPosition('endgame')}
@@ -210,7 +228,7 @@ const ChessGame: React.FC = () => {
               marginRight: 8,
             }}
           >
-            随机残局
+            {t('randomEndgame')}
           </button>
           <button
             onClick={() => loadRandomPosition('tactical')}
@@ -221,7 +239,7 @@ const ChessGame: React.FC = () => {
               marginRight: 8,
             }}
           >
-            随机战术
+            {t('randomTactical')}
           </button>
         </div>
 
@@ -237,7 +255,7 @@ const ChessGame: React.FC = () => {
               opacity: moveHistory.length === 0 ? 0.5 : 1,
             }}
           >
-            悔棋
+            {t('undo')}
           </button>
           <button
             onClick={undoToStart}
@@ -249,12 +267,12 @@ const ChessGame: React.FC = () => {
               opacity: moveHistory.length === 0 ? 0.5 : 1,
             }}
           >
-            悔到开局
+            {t('undoToStart')}
           </button>
         </div>
 
         <div style={{ marginTop: 16, textAlign: 'left', maxHeight: 200, overflowY: 'auto' }}>
-          <strong>走法记录：</strong>
+          <strong>{t('moveHistory')}:</strong>
           <div style={{ marginTop: 4 }}>
             {moveHistory.map((m, i) => (
               <span key={i} style={{ marginRight: 6 }}>

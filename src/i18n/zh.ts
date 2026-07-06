@@ -1,0 +1,23 @@
+export const zh = {
+  title: '象棋对弈',
+  currentPosition: '当前局面',
+  status: '状态',
+  turn: '轮到',
+  white: '白方',
+  black: '黑方',
+  thinking: '思考中...',
+  inProgress: '进行中',
+  checkmate: '将杀！',
+  stalemate: '和棋（无子可走）！',
+  draw: '和棋！',
+  check: '将军！',
+  newGame: '新游戏',
+  randomMiddlegame: '随机中局',
+  randomEndgame: '随机残局',
+  randomTactical: '随机战术',
+  undo: '悔棋',
+  undoToStart: '悔到开局',
+  moveHistory: '走法记录',
+  language: '语言',
+  selectLanguage: '选择语言'
+};

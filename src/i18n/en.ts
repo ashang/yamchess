@@ -1,0 +1,23 @@
+export const en = {
+  title: 'Chess Game',
+  currentPosition: 'Current Position',
+  status: 'Status',
+  turn: 'Turn',
+  white: 'White',
+  black: 'Black',
+  thinking: 'Thinking...',
+  inProgress: 'In Progress',
+  checkmate: 'Checkmate!',
+  stalemate: 'Stalemate!',
+  draw: 'Draw!',
+  check: 'Check!',
+  newGame: 'New Game',
+  randomMiddlegame: 'Random Middlegame',
+  randomEndgame: 'Random Endgame',
+  randomTactical: 'Random Tactical',
+  undo: 'Undo',
+  undoToStart: 'Undo to Start',
+  moveHistory: 'Move History',
+  language: 'Language',
+  selectLanguage: 'Select Language'
+};

@@ -1,0 +1,23 @@
+export const fr = {
+  title: 'Jeu d\'échecs',
+  currentPosition: 'Position actuelle',
+  status: 'Statut',
+  turn: 'Tour',
+  white: 'Blanc',
+  black: 'Noir',
+  thinking: 'Réflexion...',
+  inProgress: 'En cours',
+  checkmate: 'Échec et mat !',
+  stalemate: 'Pat !',
+  draw: 'Nulle !',
+  check: 'Échec !',
+  newGame: 'Nouvelle partie',
+  randomMiddlegame: 'Milieu aléatoire',
+  randomEndgame: 'Finale aléatoire',
+  randomTactical: 'Position tactique aléatoire',
+  undo: 'Annuler',
+  undoToStart: 'Annuler au début',
+  moveHistory: 'Historique des coups',
+  language: 'Langue',
+  selectLanguage: 'Sélectionner la langue'
+};
