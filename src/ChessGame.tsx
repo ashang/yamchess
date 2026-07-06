@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { Chess } from 'chess.js';
-import { Chessboard } from 'react-chessboard';
+import { Chessboard, ChessboardProvider } from 'react-chessboard';
 import './ChessGame.css';
 
 type GameHistory = {
@@ -129,7 +129,7 @@ const ChessGame: React.FC = () => {
         <div className="chessboard-container">
           <div style={{ width: boardWidth, height: boardWidth }}>
             <Chessboard 
-              position={fen}
+              fen={fen}
               onPieceDrop={onDrop}
               boardWidth={boardWidth}
               boardOrientation="white"
