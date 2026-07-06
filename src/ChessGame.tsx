@@ -50,8 +50,8 @@ const ChessGame: React.FC = () => {
     setGame(gameCopy);
     setMoveHistory([...moveHistory, { fen: gameCopy.fen(), move }]);
     setIsWhiteTurn(true);
-    // eslint-disable-next-line
     updateGameStatus(gameCopy);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game, moveHistory]);
 
 
@@ -91,7 +91,7 @@ const ChessGame: React.FC = () => {
     setGame(newGame);
     setMoveHistory([]);
     setIsWhiteTurn(true);
-    setGameStatus('ongoing');
+    setGameStatus('Ongoing');
   };
 
   // Undo the last move
@@ -105,7 +105,7 @@ const ChessGame: React.FC = () => {
     // Update game state
     const newGame = new Chess();
     if (newHistory.length > 0) {
-      newGame.loadPgn(newHistory[newHistory.length - 1].fen);
+      newGame.load(newHistory[newHistory.length - 1].fen);
     }
     
     setGame(newGame);
