@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Chess } from 'chess.js';
 import { Chessboard } from 'react-chessboard';
+import { findBestMove } from './chessAI';
 
 type MoveEntry = {
   move: string;
@@ -13,7 +14,7 @@ const ChessGame: React.FC = () => {
   const [gameStatus, setGameStatus] = useState('进行中');
   const [isThinking, setIsThinking] = useState(false);
 
-  const getGameStatus = (chess: Chess): string => {
+  const getGameStatus = useCallback((chess: Chess): string => {
     if (chess.isCheckmate()) {
       return `将杀！${chess.turn() === 'w' ? '黑方' : '白方'}获胜！`;
     }
@@ -27,28 +28,30 @@ const ChessGame: React.FC = () => {
       return '将军！';
     }
     return '进行中';
-  };
+  }, []);
 
   const syncState = useCallback(() => {
     setPosition(gameRef.current.fen());
     setGameStatus(getGameStatus(gameRef.current));
-  }, []);
+  }, [getGameStatus]);
 
-  const makeRandomMove = useCallback(() => {
+  const makeAIMove = useCallback(() => {
     const chess = gameRef.current;
-    const possibleMoves = chess.moves();
 
-    if (chess.isGameOver() || possibleMoves.length === 0) {
+    if (chess.isGameOver()) {
       setIsThinking(false);
       syncState();
       return;
     }
 
-    const randomIndex = Math.floor(Math.random() * possibleMoves.length);
-    const moveSan = possibleMoves[randomIndex];
-    chess.move(moveSan);
+    // Use Minimax AI to find the best move
+    const bestMove = findBestMove(chess, 3); // Depth 3 for reasonable performance
+    
+    if (bestMove) {
+      chess.move(bestMove);
+      setMoveHistory(prev => [...prev, { move: bestMove }]);
+    }
 
-    setMoveHistory(prev => [...prev, { move: moveSan }]);
     setIsThinking(false);
     syncState();
   }, [syncState]);
@@ -82,7 +85,7 @@ const ChessGame: React.FC = () => {
 
       // AI 走子
       setIsThinking(true);
-      setTimeout(makeRandomMove, 500);
+      setTimeout(makeAIMove, 500);
       return true;
     } catch {
       return false;
