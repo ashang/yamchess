@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { Chess } from 'chess.js';
 import { Chessboard } from 'react-chessboard';
 import { findBestMove } from './chessAI';
+import { CHESS_POSITIONS } from './positions';
 
 type MoveEntry = {
   move: string;
@@ -13,6 +14,7 @@ const ChessGame: React.FC = () => {
   const [moveHistory, setMoveHistory] = useState<MoveEntry[]>([]);
   const [gameStatus, setGameStatus] = useState('进行中');
   const [isThinking, setIsThinking] = useState(false);
+  const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
 
   const getGameStatus = useCallback((chess: Chess): string => {
     if (chess.isCheckmate()) {
@@ -98,13 +100,39 @@ const ChessGame: React.FC = () => {
     setMoveHistory([]);
     setGameStatus('进行中');
     setIsThinking(false);
+    setSelectedPosition(null);
+  };
+
+  const loadPosition = (fen: string, positionName: string) => {
+    try {
+      const chess = new Chess(fen);
+      gameRef.current = chess;
+      setPosition(fen);
+      setMoveHistory([]);
+      setGameStatus(getGameStatus(chess));
+      setIsThinking(false);
+      setSelectedPosition(positionName);
+    } catch (error) {
+      console.error('Invalid FEN:', error);
+    }
+  };
+
+  const loadRandomPosition = (type: 'middlegame' | 'endgame' | 'tactical') => {
+    const randomPos = CHESS_POSITIONS.getRandomPosition(type);
+    loadPosition(randomPos.fen, randomPos.name);
   };
 
   const currentTurn = gameRef.current.turn() === 'w' ? '白方' : '黑方';
 
   return (
-    <div style={{ margin: '20px auto', maxWidth: '600px', padding: '0 20px' }}>
+    <div style={{ margin: '20px auto', maxWidth: '700px', padding: '0 20px' }}>
       <h2 style={{ textAlign: 'center', marginBottom: 10 }}>象棋对弈</h2>
+
+      {selectedPosition && (
+        <div style={{ textAlign: 'center', marginBottom: 10, color: '#666', fontSize: 14 }}>
+          当前局面: {selectedPosition}
+        </div>
+      )}
 
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <Chessboard
@@ -120,17 +148,52 @@ const ChessGame: React.FC = () => {
         <p style={{ fontSize: 16, fontWeight: 'bold' }}>
           状态: {gameStatus} | 轮到: {isThinking ? '黑方思考中...' : currentTurn}
         </p>
-        <button
-          onClick={resetGame}
-          style={{
-            padding: '8px 16px',
-            fontSize: 14,
-            cursor: 'pointer',
-            marginTop: 8,
-          }}
-        >
-          新游戏
-        </button>
+        
+        <div style={{ marginTop: 15 }}>
+          <button
+            onClick={resetGame}
+            style={{
+              padding: '8px 16px',
+              fontSize: 14,
+              cursor: 'pointer',
+              marginRight: 8,
+            }}
+          >
+            新游戏
+          </button>
+          <button
+            onClick={() => loadRandomPosition('middlegame')}
+            style={{
+              padding: '8px 16px',
+              fontSize: 14,
+              cursor: 'pointer',
+              marginRight: 8,
+            }}
+          >
+            随机中局
+          </button>
+          <button
+            onClick={() => loadRandomPosition('endgame')}
+            style={{
+              padding: '8px 16px',
+              fontSize: 14,
+              cursor: 'pointer',
+              marginRight: 8,
+            }}
+          >
+            随机残局
+          </button>
+          <button
+            onClick={() => loadRandomPosition('tactical')}
+            style={{
+              padding: '8px 16px',
+              fontSize: 14,
+              cursor: 'pointer',
+            }}
+          >
+            随机战术
+          </button>
+        </div>
 
         <div style={{ marginTop: 16, textAlign: 'left', maxHeight: 200, overflowY: 'auto' }}>
           <strong>走法记录：</strong>
