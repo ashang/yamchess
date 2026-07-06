@@ -122,6 +122,35 @@ const ChessGame: React.FC = () => {
     loadPosition(randomPos.fen, randomPos.name);
   };
 
+  const undoMove = () => {
+    const chess = gameRef.current;
+    
+    // Undo the last move
+    chess.undo();
+    
+    // Update position and history
+    setPosition(chess.fen());
+    setMoveHistory(prev => prev.slice(0, -1));
+    setGameStatus(getGameStatus(chess));
+    setIsThinking(false);
+  };
+
+  const undoToStart = () => {
+    const chess = gameRef.current;
+    
+    // Undo all moves
+    while (chess.history().length > 0) {
+      chess.undo();
+    }
+    
+    // Reset to initial position
+    setPosition(chess.fen());
+    setMoveHistory([]);
+    setGameStatus(getGameStatus(chess));
+    setIsThinking(false);
+    setSelectedPosition(null);
+  };
+
   const currentTurn = gameRef.current.turn() === 'w' ? '白方' : '黑方';
 
   return (
@@ -189,9 +218,38 @@ const ChessGame: React.FC = () => {
               padding: '8px 16px',
               fontSize: 14,
               cursor: 'pointer',
+              marginRight: 8,
             }}
           >
             随机战术
+          </button>
+        </div>
+
+        <div style={{ marginTop: 10 }}>
+          <button
+            onClick={undoMove}
+            disabled={moveHistory.length === 0}
+            style={{
+              padding: '8px 16px',
+              fontSize: 14,
+              cursor: moveHistory.length === 0 ? 'not-allowed' : 'pointer',
+              marginRight: 8,
+              opacity: moveHistory.length === 0 ? 0.5 : 1,
+            }}
+          >
+            悔棋
+          </button>
+          <button
+            onClick={undoToStart}
+            disabled={moveHistory.length === 0}
+            style={{
+              padding: '8px 16px',
+              fontSize: 14,
+              cursor: moveHistory.length === 0 ? 'not-allowed' : 'pointer',
+              opacity: moveHistory.length === 0 ? 0.5 : 1,
+            }}
+          >
+            悔到开局
           </button>
         </div>
 
