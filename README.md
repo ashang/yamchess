@@ -1,4 +1,29 @@
-# Getting Started with Create React App
+# YamChess, Yet Another Multi-mode Chess game
+
+## Design
+
+- Interactive Chessboard: A responsive chessboard with drag-and-drop functionality.
+- Game Logic: Full implementation of chess rules, including special moves like castling and en passant.
+- AI Opponent: A simple AI that makes random valid moves.
+- Game State Management: Tracks game status, turn, and move history.
+- Responsive Design: Adapts to different screen sizes.
+- User Interface: Clean and intuitive interface with game status, turn indicator, and move history.
+
+## Features
+
+- Move Validation: Ensures all moves follow standard chess rules.
+- Game Status: Displays check, checkmate, and draw conditions.
+- Move History: Tracks and displays all moves made in the game.
+- Responsive Design: Works on both desktop and mobile devices.
+- Visual Feedback: Highlights valid moves and provides visual cues for game state.
+
+## Future Enhancements
+
+- Improved AI: Implement a more sophisticated AI using algorithms like Minimax with Alpha-Beta pruning.
+- Game Persistence: Save and load games using local storage.
+- Move Animation: Add smooth animations for piece movements.
+- Sound Effects: Add sound effects for moves, captures, and game events.
+- Themes: Allow users to choose different board and piece themes.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -20,6 +45,7 @@ Launches the test runner in the interactive watch mode.\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
 ### `npm run build`
+
 
 Builds the app for production to the `build` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.
