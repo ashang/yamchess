@@ -19,5 +19,7 @@ export const en = {
   undoToStart: 'Undo to Start',
   moveHistory: 'Move History',
   language: 'Language',
-  selectLanguage: 'Select Language'
+  selectLanguage: 'Select Language',
+  gameHistory: 'Game History',
+  selectGameHistory: '-- Select Game History --'
 };

@@ -19,5 +19,7 @@ export const fr = {
   undoToStart: 'Annuler au début',
   moveHistory: 'Historique des coups',
   language: 'Langue',
-  selectLanguage: 'Sélectionner la langue'
+  selectLanguage: 'Sélectionner la langue',
+  gameHistory: 'Historique des parties',
+  selectGameHistory: '-- Sélectionner l\'historique --'
 };

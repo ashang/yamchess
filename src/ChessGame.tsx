@@ -1,9 +1,10 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Chess } from 'chess.js';
 import { Chessboard } from 'react-chessboard';
 import { findBestMove } from './chessAI';
 import { CHESS_POSITIONS } from './positions';
 import { useLanguage } from './i18n/LanguageContext';
+import { saveGameToHistory, getGameHistory, GameRecord } from './gameHistory';
 
 type MoveEntry = {
   move: string;
@@ -17,6 +18,14 @@ const ChessGame: React.FC = () => {
   const [gameStatus, setGameStatus] = useState(t('inProgress'));
   const [isThinking, setIsThinking] = useState(false);
   const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
+  const [gameHistory, setGameHistory] = useState<GameRecord[]>([]);
+  const [selectedHistoryGame, setSelectedHistoryGame] = useState<string | null>(null);
+  const [gameEnded, setGameEnded] = useState(false);
+
+  // Load game history on mount
+  useEffect(() => {
+    setGameHistory(getGameHistory());
+  }, []);
 
   const getGameStatus = useCallback((chess: Chess): string => {
     if (chess.isCheckmate()) {
@@ -37,7 +46,23 @@ const ChessGame: React.FC = () => {
   const syncState = useCallback(() => {
     setPosition(gameRef.current.fen());
     setGameStatus(getGameStatus(gameRef.current));
-  }, [getGameStatus]);
+    
+    // Check if game just ended and save to history
+    const chess = gameRef.current;
+    if (chess.isGameOver() && !gameEnded && moveHistory.length > 0) {
+      const record: GameRecord = {
+        id: Date.now().toString(),
+        date: new Date().toLocaleString(),
+        result: getGameStatus(chess),
+        moves: moveHistory.map(m => m.move),
+        finalFen: chess.fen(),
+        startPosition: selectedPosition
+      };
+      saveGameToHistory(record);
+      setGameHistory(getGameHistory());
+      setGameEnded(true);
+    }
+  }, [getGameStatus, gameEnded, moveHistory, selectedPosition]);
 
   const makeAIMove = useCallback(() => {
     const chess = gameRef.current;
@@ -103,6 +128,8 @@ const ChessGame: React.FC = () => {
     setGameStatus(t('inProgress'));
     setIsThinking(false);
     setSelectedPosition(null);
+    setGameEnded(false);
+    setSelectedHistoryGame(null);
   };
 
   const loadPosition = (fen: string, positionName: string) => {
@@ -114,8 +141,34 @@ const ChessGame: React.FC = () => {
       setGameStatus(getGameStatus(chess));
       setIsThinking(false);
       setSelectedPosition(positionName);
+      setGameEnded(false);
+      setSelectedHistoryGame(null);
     } catch (error) {
       console.error('Invalid FEN:', error);
+    }
+  };
+
+  const loadGameFromHistory = (gameId: string) => {
+    const game = gameHistory.find(g => g.id === gameId);
+    if (!game) return;
+
+    try {
+      const chess = new Chess();
+      // Load all moves
+      for (const move of game.moves) {
+        chess.move(move);
+      }
+      
+      gameRef.current = chess;
+      setPosition(chess.fen());
+      setMoveHistory(game.moves.map(move => ({ move })));
+      setGameStatus(getGameStatus(chess));
+      setIsThinking(false);
+      setSelectedPosition(game.startPosition);
+      setGameEnded(true);
+      setSelectedHistoryGame(gameId);
+    } catch (error) {
+      console.error('Failed to load game from history:', error);
     }
   };
 
@@ -264,12 +317,37 @@ const ChessGame: React.FC = () => {
               padding: '8px 16px',
               fontSize: 14,
               cursor: moveHistory.length === 0 ? 'not-allowed' : 'pointer',
+              marginRight: 8,
               opacity: moveHistory.length === 0 ? 0.5 : 1,
             }}
           >
             {t('undoToStart')}
           </button>
         </div>
+
+        {gameHistory.length > 0 && (
+          <div style={{ marginTop: 10 }}>
+            <label style={{ fontSize: 14, marginRight: 8 }}>
+              {t('gameHistory')}:
+            </label>
+            <select
+              value={selectedHistoryGame || ''}
+              onChange={(e) => e.target.value && loadGameFromHistory(e.target.value)}
+              style={{
+                padding: '6px 12px',
+                fontSize: 14,
+                cursor: 'pointer',
+              }}
+            >
+              <option value="">{t('selectGameHistory')}</option>
+              {gameHistory.map(game => (
+                <option key={game.id} value={game.id}>
+                  {game.date} - {game.result} ({game.moves.length} {language === 'zh' ? '步' : language === 'fr' ? 'coups' : 'moves'})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div style={{ marginTop: 16, textAlign: 'left', maxHeight: 200, overflowY: 'auto' }}>
           <strong>{t('moveHistory')}:</strong>

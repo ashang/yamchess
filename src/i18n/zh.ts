@@ -19,5 +19,7 @@ export const zh = {
   undoToStart: '悔到开局',
   moveHistory: '走法记录',
   language: '语言',
-  selectLanguage: '选择语言'
+  selectLanguage: '选择语言',
+  gameHistory: '历史棋局',
+  selectGameHistory: '-- 选择历史棋局 --'
 };
