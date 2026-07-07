@@ -18,6 +18,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    // React 17+ JSX, compiler will inject `import { jsx as _jsx } from 'react/jsx-runtime'`
+    // without manual `import React from 'react'` for JSX
     "jsx": "react-jsx"
   },
   "include": [

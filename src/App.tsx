@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import './App.css';
 import ChessGame from './ChessGame';
 import { LanguageProvider } from './i18n/LanguageContext';
