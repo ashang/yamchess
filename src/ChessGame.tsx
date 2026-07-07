@@ -5,6 +5,7 @@ import { Chessboard } from 'react-chessboard';
 import { findBestMove } from './chessAI';
 import { CHESS_POSITIONS } from './positions';
 import { useLanguage } from './i18n/LanguageContext';
+import { Language } from './i18n';
 import { saveGameToHistory, getGameHistory, GameRecord } from './gameHistory';
 
 type MoveEntry = {
@@ -86,14 +87,14 @@ const ChessGame: React.FC = () => {
     syncState();
   }, [syncState]);
 
-  function onDrop(sourceSquare: string, targetSquare: string, piece: string): boolean {
+  function onDrop(sourceSquare: string, targetSquare: string, _piece: string): boolean {
     const chess = gameRef.current;
 
-    // 只允许白方走子（玩家）
+    // Only w can move - player
     if (chess.turn() !== 'w') return false;
-    // 游戏结束不允许走子
+    // No moving on GameOver
     if (chess.isGameOver()) return false;
-    // AI 正在思考时不允许走子
+    // No moving on AI thinking
     if (isThinking) return false;
 
     try {
@@ -108,12 +109,11 @@ const ChessGame: React.FC = () => {
       setMoveHistory(prev => [...prev, { move: move.san }]);
       syncState();
 
-      // 检查游戏是否结束
       if (chess.isGameOver()) {
         return true;
       }
 
-      // AI 走子
+      // AI moving
       setIsThinking(true);
       setTimeout(makeAIMove, 500);
       return true;
@@ -223,7 +223,7 @@ const ChessGame: React.FC = () => {
         <h2 style={{ textAlign: 'center', margin: 0, flex: 1 }}>{t('title')}</h2>
         <select
           value={language}
-          onChange={(e) => setLanguage(e.target.value as any)}
+          onChange={(e) => setLanguage(e.target.value as Language)}
           style={{
             padding: '6px 12px',
             fontSize: 14,

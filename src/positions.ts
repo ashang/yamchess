@@ -78,7 +78,7 @@ export const CHESS_POSITIONS = {
 
   // 获取随机位置
   getRandomPosition(type: 'middlegame' | 'endgame' | 'tactical' | 'all' = 'all') {
-    let positions: any[] = [];
+    let positions: { name: string; fen: string }[] = [];
     
     if (type === 'all') {
       positions = [...this.middlegame, ...this.endgame, ...this.tactical];
